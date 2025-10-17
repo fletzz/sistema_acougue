@@ -8,7 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Cliente extends Model
 {
 
+    use HasFactory;
+
     protected $table = 'clientes';
 
-    use HasFactory;
+    public function vendas() {
+        return $this->hasMany(Venda::class);
+    }
 }

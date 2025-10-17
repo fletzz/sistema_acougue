@@ -7,8 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Usuario extends Model
 {
+    use HasFactory;
 
     protected $table = 'usuarios';
 
-    use HasFactory;
+    public function vendas() {
+        return $this->hasMany(Venda::class);
+    }
+
 }
