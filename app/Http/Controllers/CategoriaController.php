@@ -26,7 +26,7 @@ class CategoriaController extends Controller
      */
     public function create()
     {
-        //
+        return view('categorias.create');
     }
 
     /**
@@ -37,7 +37,13 @@ class CategoriaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $dadosValidados = $request->validate([
+            'nome' => 'required|string|max:255' 
+        ]);
+
+        Categoria::create($dadosValidados);
+
+        return redirect('/categorias');
     }
 
     /**
@@ -59,7 +65,9 @@ class CategoriaController extends Controller
      */
     public function edit($id)
     {
-        //
+        $categoria = Categoria::findOrFail($id);
+
+        return view('categorias.edit', ['categoria' => $categoria]);
     }
 
     /**
@@ -71,7 +79,17 @@ class CategoriaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $categoria = Categoria::findOrFail($id); 
+        
+        $dadosValidados = $request->validate([
+            'nome' => 'required|string|max:255' 
+        ]);
+
+        // 3. Atualiza a categoria apenas com os dados validados
+        $categoria->update($dadosValidados); 
+        
+        // 4. Redireciona
+        return redirect('/categorias');
     }
 
     /**
@@ -82,6 +100,7 @@ class CategoriaController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Categoria::destroy($id); //já faz o find no $id e ja apaga
+        return redirect('/categorias');
     }
 }
