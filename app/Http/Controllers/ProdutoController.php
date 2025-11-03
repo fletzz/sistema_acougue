@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Categoria;
 use App\Models\Produto;
+use App\Models\Categoria;
 use Illuminate\Http\Request;
 
-class CategoriaController extends Controller
+class ProdutoController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,9 +15,9 @@ class CategoriaController extends Controller
      */
     public function index()
     {
-        $categorias = Categoria::all();
+        $produtos = Produto::with('categoria')->get();
 
-        return view('categorias.index', ['categorias' => $categorias]);
+        return view('produtos.index', ['produtos' => $produtos]);
     }
 
     /**
@@ -27,7 +27,9 @@ class CategoriaController extends Controller
      */
     public function create()
     {
-        return view('categorias.create');
+        $categorias = Categoria::all();
+
+        return view('produtos.create', ['categorias' => $categorias]);
     }
 
     /**
@@ -39,12 +41,16 @@ class CategoriaController extends Controller
     public function store(Request $request)
     {
         $dadosValidados = $request->validate([
-            'nome' => 'required|string|max:255' 
+            'nome' => 'required|string|max:255',
+            'categoria_id' => 'required|exists:categorias,id',
+            'preco_venda' => 'required|numeric|gte:0',
+            'unidade_medida' => 'required|string|max:10',
+            'codigo_barras' => 'nullable|string|max:255'
         ]);
 
-        Categoria::create($dadosValidados);
+        Produto::create($dadosValidados);
 
-        return redirect('/categorias');
+        return redirect('/produtos');
     }
 
     /**
@@ -66,9 +72,13 @@ class CategoriaController extends Controller
      */
     public function edit($id)
     {
-        $categoria = Categoria::findOrFail($id);
+        $produto = Produto::findOrFail($id);
 
-        return view('categorias.edit', ['categoria' => $categoria]);
+        $categorias = Categoria::all();
+        return view('produtos.edit', [
+            'produto' => $produto,
+            'categorias' => $categorias
+        ]);
     }
 
     /**
@@ -80,15 +90,19 @@ class CategoriaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $categoria = Categoria::findOrFail($id); 
-        
+        $produto = Produto::findOrFail($id); 
+
         $dadosValidados = $request->validate([
-            'nome' => 'required|string|max:255' 
+            'nome' => 'required|string|max:255',
+            'categoria_id' => 'required|exists:categorias,id',
+            'preco_venda' => 'required|numeric|gte:0',
+            'unidade_medida' => 'required|string|max:10',
+            'codigo_barras' => 'nullable|string|max:255'
         ]);
 
-        $categoria->update($dadosValidados); 
-        
-        return redirect('/categorias');
+        $produto->update($dadosValidados); 
+
+        return redirect('/produtos');
     }
 
     /**
@@ -99,7 +113,7 @@ class CategoriaController extends Controller
      */
     public function destroy($id)
     {
-        Categoria::destroy($id); //já faz o find no $id e ja apaga
-        return redirect('/categorias');
+        Produto::destroy($id);
+        return redirect('/produtos');
     }
 }
