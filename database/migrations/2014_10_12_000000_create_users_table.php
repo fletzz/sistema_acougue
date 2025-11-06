@@ -19,6 +19,11 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            
+            $table->string('login')->unique()->nullable();
+            $table->string('nivel_acesso')->default('caixa');
+            $table->boolean('ativo')->default(true);
+            
             $table->rememberToken();
             $table->timestamps();
         });

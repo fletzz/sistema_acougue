@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('caixa_movimentacoes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('caixa_id')->constrained('caixas');
-            $table->foreignId('usuario_id')->constrained('usuarios');
+            $table->foreignId('usuario_id')->constrained('users');
             $table->foreignId('forma_pagamento_id')->nullable()->constrained('formas_pagamento');
             $table->enum('tipo_movimentacao', ['entrada', 'saida', 'venda', 'suprimento', 'sangria']);
             $table->decimal('valor', 10, 2);

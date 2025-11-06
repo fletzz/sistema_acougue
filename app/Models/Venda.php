@@ -9,6 +9,8 @@ class Venda extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['cliente_id','usuario_id','data_venda','valor_total_produtos','valor_desconto','valor_total_final','status','observacao'];
+
     protected $table = 'vendas';
 
     public function cliente() {

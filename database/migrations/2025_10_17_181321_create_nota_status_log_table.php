@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('status_anterior', 20);
             $table->string('status_novo', 20);
             $table->dateTime('data_alteracao');
-            $table->foreignId('usuario_id')->nullable()->constrained('usuarios');
+            $table->foreignId('usuario_id')->nullable()->constrained('users');
             $table->text('observacao')->nullable();
             $table->timestamps();
         });

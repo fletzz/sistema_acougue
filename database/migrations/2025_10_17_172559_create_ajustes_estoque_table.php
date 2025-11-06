@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('ajustes_estoque', function (Blueprint $table) {
             $table->id();
             $table->foreignId('produto_id')->constrained('produtos');
-            $table->foreignId('usuario_id')->constrained('usuarios');
+            $table->foreignId('usuario_id')->constrained('users');
             $table->decimal('quantidade', 10, 3);
             $table->text('motivo');
             $table->dateTime('data_ajuste');

@@ -16,13 +16,13 @@ return new class extends Migration
         Schema::create('vendas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('cliente_id')->nullable()->constrained('clientes');
-            $table->foreignId('usuario_id')->constrained('usuarios');
+            $table->foreignId('usuario_id')->constrained('users');
             $table->dateTime('data_venda');
             $table->decimal('valor_total_produtos', 10, 2);
             $table->decimal('valor_desconto', 10, 2)->default(0);
             $table->decimal('valor_total_final', 10, 2);
             $table->string('status')->default('finalizada');
-            $table->text('observação')->nullable();
+            $table->text('observacao')->nullable();
             $table->timestamps();
         });
     }

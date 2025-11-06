@@ -9,7 +9,9 @@ class VendaItem extends Model
 {
     use HasFactory;
 
-    protected $table = 'venda_item';
+    protected $fillable = ['venda_id','produto_id','quantidade','preco_unitario'];
+
+    protected $table = 'venda_items';
 
     public function venda() {
         return $this->belongsTo(Venda::class);
