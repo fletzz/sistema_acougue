@@ -70,19 +70,35 @@ class VendaController extends Controller
             $venda = Venda::create($dadosVenda); //Criei a venda "pai"
 
             foreach ($itemsArray as $item) {
+                
+                // 8.1. Encontra o produto
+                $produto = Produto::findOrFail($item['produto_id']);
+
+                // 8.2. DEBUG: VAMOS VER OS VALORES REAIS
+                // Vamos converter ambos para string para ter certeza
+                $estoque_real_string = (string)$produto->estoque_atual;
+                $venda_real_string = (string)$item['quantidade'];
+
+                // 8.3. A CHECAGEM DE ESTOQUE
+                // Compara os dois números como strings
+                if (bccomp($estoque_real_string, $venda_real_string, 3) === -1) {
+                    
+                    // Jogue um erro que nos diz OS NÚMEROS REAIS!
+                    throw new \Exception('Estoque insuficiente. Estoque no DB: [' . $estoque_real_string . '] | Quantidade da Venda: [' . $venda_real_string . ']');
+                }
+
+                // 7. CRIAR O VENDA_ITEM
                 $dadosItem = [
-                'venda_id' => $venda->id, 
-                //estão pegando o id do carrinho
-                'produto_id' => $item['produto_id'],
-                'quantidade' => $item['quantidade'], 
-                'preco_unitario' => $item['preco_unitario'] 
-            ];
+                    'venda_id' => $venda->id, 
+                    'produto_id' => $item['produto_id'],
+                    'quantidade' => $item['quantidade'], 
+                    'preco_unitario' => $item['preco_unitario'] 
+                ];
+                VendaItem::create($dadosItem);
 
-            VendaItem::create($dadosItem);
-
-            $produto = Produto::findOrFail($item['produto_id']);
-            $produto->estoque_atual -= $item['quantidade'];
-            $produto->save();
+                // 8.4. DAR BAIXA NO ESTOQUE (Só acontece se o 'if' acima passar)
+                $produto->estoque_atual -= $item['quantidade'];
+                $produto->save();
             }
 
             DB::commit();
