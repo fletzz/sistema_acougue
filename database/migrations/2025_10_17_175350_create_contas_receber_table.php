@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('contas_receber', function (Blueprint $table) {
             $table->id();
             $table->foreignId('venda_id')->constrained('vendas')->onDelete('cascade');
-            $table->foreignId('cliente_id')->constrained('clientes');
+            $table->foreignId('cliente_id')->nullable()->constrained('clientes');
             $table->foreignId('forma_pagamento_id')->constrained('formas_pagamento');
             $table->decimal('valor_pago', 10, 2);
             $table->dateTime('data_pagamento');

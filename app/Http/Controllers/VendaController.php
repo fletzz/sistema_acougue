@@ -10,6 +10,8 @@ use App\Models\VendaItem;
 use App\Models\FormaPagamento;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\ContasReceber;
+use App\Models\CaixaMovimentacao;
 
 
 class VendaController extends Controller
@@ -57,7 +59,7 @@ class VendaController extends Controller
 
             $dadosVenda = [
                 'cliente_id' => $dadosValidados['cliente_id'],
-                'forma_pagamento_id' => $dadosValidados['forma_pagamento_id'],
+                //'forma_pagamento_id' => $dadosValidados['forma_pagamento_id'],
                 'valor_total_final' => $dadosValidados['valor_total_final'],
                 'data_venda' => now(),
                 'usuario_id' => Auth::id(), //Pega o id do user logado no sistema
@@ -100,6 +102,27 @@ class VendaController extends Controller
                 $produto->estoque_atual -= $item['quantidade'];
                 $produto->save();
             }
+
+            $dadosConta = [
+            'venda_id' => $venda->id,
+            'cliente_id' => $dadosValidados['cliente_id'],
+            'forma_pagamento_id' => $dadosValidados['forma_pagamento_id'],
+            'valor_pago' => $dadosValidados['valor_total_final'],
+            'data_pagamento' => $dadosVenda['data_venda']
+            ];
+            ContasReceber::create($dadosConta);
+
+
+            // 10. MOVIMENTAR O CAIXA
+            $dadosCaixa = [
+                'caixa_id' => 1, // "Fingindo" ser o Caixa 1
+                'usuario_id' => $dadosVenda['usuario_id'],
+                'forma_pagamento_id' => $dadosValidados['forma_pagamento_id'],
+                'tipo_movimentacao' => 'venda',
+                'valor' => $dadosValidados['valor_total_final'],
+                'data_movimentacao' => $dadosVenda['data_venda']
+            ];
+            CaixaMovimentacao::create($dadosCaixa);
 
             DB::commit();
         } catch (\Exception $e) {
