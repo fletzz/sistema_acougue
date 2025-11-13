@@ -13,12 +13,14 @@ class Venda extends Model
 
     protected $table = 'vendas';
 
+    protected $casts = ['data_venda' => 'datetime',];
+
     public function cliente() {
         return $this->belongsTo(Cliente::class);
     }
 
-    public function usuario() {
-        return $this->belongsTo(Usuario::class);
+    public function user() {
+        return $this->belongsTo(User::class, 'usuario_id');
     }
 
     public function items() {

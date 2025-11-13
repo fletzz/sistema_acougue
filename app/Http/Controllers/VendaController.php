@@ -21,7 +21,12 @@ class VendaController extends Controller
      */
     public function index()
     {
-        //
+        
+        $vendas = Venda::with(['cliente', 'user']) 
+                        ->latest()
+                        ->get();
+
+        return view('vendas.index', ['vendas' => $vendas]);
     }
 
     /**
@@ -139,6 +144,9 @@ class VendaController extends Controller
      */
     public function show($id)
     {
-        //
+        $venda = Venda::with(['cliente', 'user', 'items', 'items.produto'])
+                     ->findOrFail($id);
+
+        return view('vendas.show', ['venda' => $venda]);
     }
 }
