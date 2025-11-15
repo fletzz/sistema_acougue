@@ -1,8 +1,10 @@
-<h1>Histórico de Vendas</h1>
-
-<a href="/vendas/create">Ir para a Frente de Caixa (PDV)</a>
-
-<hr>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h1>Histórico de Vendas</h1>
+    <div>
+        <a href="{{ route('dashboard') }}" style="margin-right: 10px; color: #2563eb; text-decoration: underline;">Dashboard</a>
+        <a href="{{ route('vendas.create') }}" style="padding: 10px 20px; background: #059669; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">Nova Venda</a>
+    </div>
+</div>
 
 <table border="1" style="width: 100%;">
     <thead>

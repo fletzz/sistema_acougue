@@ -109,25 +109,32 @@ class VendaController extends Controller
             }
 
             $dadosConta = [
-            'venda_id' => $venda->id,
-            'cliente_id' => $dadosValidados['cliente_id'],
-            'forma_pagamento_id' => $dadosValidados['forma_pagamento_id'],
-            'valor_pago' => $dadosValidados['valor_total_final'],
-            'data_pagamento' => $dadosVenda['data_venda']
+                'venda_id' => $venda->id,
+                'cliente_id' => $dadosValidados['cliente_id'],
+                'forma_pagamento_id' => $dadosValidados['forma_pagamento_id'],
+                'valor_pago' => $dadosValidados['valor_total_final'],
+                'data_pagamento' => $dadosVenda['data_venda'],
+                'status' => 'pendente'
             ];
             ContasReceber::create($dadosConta);
 
 
-            // 10. MOVIMENTAR O CAIXA
-            $dadosCaixa = [
-                'caixa_id' => 1, // "Fingindo" ser o Caixa 1
-                'usuario_id' => $dadosVenda['usuario_id'],
-                'forma_pagamento_id' => $dadosValidados['forma_pagamento_id'],
-                'tipo_movimentacao' => 'venda',
-                'valor' => $dadosValidados['valor_total_final'],
-                'data_movimentacao' => $dadosVenda['data_venda']
-            ];
-            CaixaMovimentacao::create($dadosCaixa);
+            $caixa = \App\Models\Caixa::where('status', 'aberto')->first();
+            if ($caixa) {
+                $dadosCaixa = [
+                    'caixa_id' => $caixa->id,
+                    'usuario_id' => $dadosVenda['usuario_id'],
+                    'forma_pagamento_id' => $dadosValidados['forma_pagamento_id'],
+                    'tipo_movimentacao' => 'venda',
+                    'valor' => $dadosValidados['valor_total_final'],
+                    'data_movimentacao' => $dadosVenda['data_venda'],
+                    'observacao' => 'Venda #' . $venda->id
+                ];
+                CaixaMovimentacao::create($dadosCaixa);
+                
+                $caixa->saldo_atual += $dadosValidados['valor_total_final'];
+                $caixa->save();
+            }
 
             DB::commit();
         } catch (\Exception $e) {
@@ -144,7 +151,7 @@ class VendaController extends Controller
      */
     public function show($id)
     {
-        $venda = Venda::with(['cliente', 'user', 'items', 'items.produto'])
+        $venda = Venda::with(['cliente', 'user', 'items', 'items.produto', 'notaFiscal'])
                      ->findOrFail($id);
 
         return view('vendas.show', ['venda' => $venda]);

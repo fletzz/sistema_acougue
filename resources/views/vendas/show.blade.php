@@ -1,6 +1,14 @@
 <h1>Detalhes da Venda #{{ $venda->id }}</h1>
 
-<a href="/vendas">Voltar para o Histórico</a>
+<div style="margin-bottom: 20px;">
+    <a href="{{ route('vendas.index') }}" style="margin-right: 10px; color: #2563eb; text-decoration: underline;">← Voltar para Vendas</a>
+    <a href="{{ route('dashboard') }}" style="margin-right: 10px; color: #2563eb; text-decoration: underline;">Dashboard</a>
+    @if(!$venda->notaFiscal)
+    <a href="{{ route('nfe.create', $venda->id) }}" style="padding: 8px 16px; background: #2563eb; color: white; text-decoration: none; border-radius: 6px;">Gerar NFe</a>
+    @else
+    <a href="{{ route('nfe.show', $venda->notaFiscal->id) }}" style="padding: 8px 16px; background: #059669; color: white; text-decoration: none; border-radius: 6px;">Ver NFe</a>
+    @endif
+</div>
 <hr>
 
 <h3>Resumo da Venda</h3>

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreignId('forma_pagamento_id')->constrained('formas_pagamento');
             $table->decimal('valor_pago', 10, 2);
             $table->dateTime('data_pagamento');
+            $table->string('status')->default('pendente');
             $table->timestamps();
         });
     }

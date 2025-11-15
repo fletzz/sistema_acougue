@@ -35,6 +35,16 @@
         <input type="text" id="codigo_barras" name="codigo_barras">
     </div>
 
+    <div>
+        <label for="estoque_atual">Estoque Atual:</label>
+        <input type="number" id="estoque_atual" name="estoque_atual" step="0.001" min="0" value="0">
+    </div>
+
+    <div>
+        <label for="estoque_minimo">Estoque Mínimo:</label>
+        <input type="number" id="estoque_minimo" name="estoque_minimo" step="0.001" min="0" value="0">
+    </div>
+
     <button type="submit">Salvar Produto</button>
 </form>
 

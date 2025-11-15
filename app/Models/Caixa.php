@@ -8,12 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class Caixa extends Model
 {
     use HasFactory;
+
     protected $table = 'caixas';
 
     protected $fillable = [
-        'id',
         'descricao',
         'status',
         'saldo_atual'
     ];
+
+    public function movimentacoes()
+    {
+        return $this->hasMany(CaixaMovimentacao::class);
+    }
 }

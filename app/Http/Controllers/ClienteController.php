@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Cliente;
+use App\Rules\CpfCnpj;
 
 class ClienteController extends Controller
 {
@@ -39,7 +40,7 @@ class ClienteController extends Controller
     {
         $dadosValidados = $request->validate([
             'nome' => 'required|string|max:100',
-            'cpf_cnpj' => 'required|string|max:18|unique:clientes',
+            'cpf_cnpj' => ['required', 'string', 'max:18', 'unique:clientes', new CpfCnpj],
             'telefone' => 'required|string|max:15',
             'email' => 'nullable|email|unique:clientes'
         ]);
@@ -85,7 +86,7 @@ class ClienteController extends Controller
 
         $dadosValidados = $request->validate([
             'nome' => 'required|string|max:100',
-            'cpf_cnpj' => 'required|string|max:18|unique:clientes,cpf_cnpj,' . $id,
+            'cpf_cnpj' => ['required', 'string', 'max:18', 'unique:clientes,cpf_cnpj,' . $id, new CpfCnpj],
             'telefone' => 'required|string|max:15',
             'email' => 'nullable|email|unique:clientes,email,' . $id
         ]);

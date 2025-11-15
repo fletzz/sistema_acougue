@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Fornecedor;
+use App\Rules\CpfCnpj;
 
 class FornecedorController extends Controller
 {
@@ -39,7 +40,7 @@ class FornecedorController extends Controller
         $dadosValidados = $request->validate([
             'razao_social' => 'required|string|max:255',
             'nome_fantasia' => 'nullable|string|max:255',
-            'cnpj' => 'required|string|max:18|unique:fornecedores',
+            'cnpj' => ['required', 'string', 'max:18', 'unique:fornecedores', new CpfCnpj],
             'telefone' => 'nullable|string|max:15',
             'email' => 'nullable|email|unique:fornecedores',
             'endereco' => 'nullable|string'
@@ -86,7 +87,7 @@ class FornecedorController extends Controller
         $dadosValidados = $request->validate([
             'razao_social' => 'required|string|max:255',
             'nome_fantasia' => 'nullable|string|max:255',
-            'cnpj' => 'required|string|max:18|unique:fornecedores,cnpj,' . $id,
+            'cnpj' => ['required', 'string', 'max:18', 'unique:fornecedores,cnpj,' . $id, new CpfCnpj],
             'telefone' => 'nullable|string|max:15',
             'email' => 'nullable|email|unique:fornecedores,email,' . $id,
             'endereco' => 'nullable|string'

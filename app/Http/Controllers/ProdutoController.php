@@ -97,7 +97,9 @@ class ProdutoController extends Controller
             'categoria_id' => 'required|exists:categorias,id',
             'preco_venda' => 'required|numeric|gte:0',
             'unidade_medida' => 'required|string|max:10',
-            'codigo_barras' => 'nullable|string|max:255'
+            'codigo_barras' => 'nullable|string|max:255',
+            'estoque_atual' => 'nullable|numeric|min:0',
+            'estoque_minimo' => 'nullable|numeric|min:0'
         ]);
 
         $produto->update($dadosValidados); 

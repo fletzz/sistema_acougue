@@ -26,4 +26,12 @@ class Venda extends Model
     public function items() {
         return $this->hasMany(VendaItem::class);
     }
+
+    public function notaFiscal() {
+        return $this->hasOne(NotaFiscal::class);
+    }
+
+    public function contasReceber() {
+        return $this->hasMany(ContasReceber::class);
+    }
 }

@@ -9,7 +9,33 @@ class ContasReceber extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['venda_id','cliente_id','forma_pagamento_id','valor_pago','data_pagamento'];
-
     protected $table = 'contas_receber';
+
+    protected $fillable = [
+        'venda_id',
+        'cliente_id',
+        'forma_pagamento_id',
+        'valor_pago',
+        'data_pagamento',
+        'status'
+    ];
+
+    protected $casts = [
+        'data_pagamento' => 'datetime'
+    ];
+
+    public function venda()
+    {
+        return $this->belongsTo(Venda::class);
+    }
+
+    public function cliente()
+    {
+        return $this->belongsTo(Cliente::class);
+    }
+
+    public function formaPagamento()
+    {
+        return $this->belongsTo(FormaPagamento::class);
+    }
 }

@@ -1,6 +1,10 @@
-<a href="/clientes/create">Cadastrar Novo Cliente</a>
-
-<h1>Lista de Clientes</h1>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h1>Lista de Clientes</h1>
+    <div>
+        <a href="{{ route('dashboard') }}" style="margin-right: 10px; color: #2563eb; text-decoration: underline;">Dashboard</a>
+        <a href="{{ route('clientes.create') }}" style="padding: 10px 20px; background: #7c3aed; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">Novo Cliente</a>
+    </div>
+</div>
 
 <table border="1" style="width: 1000px;">
     <thead>
