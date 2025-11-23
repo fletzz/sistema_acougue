@@ -20,6 +20,7 @@ use App\Http\Controllers\AjusteEstoqueController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TransformacaoController;
 use App\Http\Controllers\EntradaMercadoriaController;
+use App\Http\Controllers\CheckoutController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +36,11 @@ Route::get('/', function () {
 // --- ROTAS PROTEGIDAS (SÓ PARA QUEM ESTÁ LOGADO) ---
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+
+    Route::get('/checkout', [VendaController::class, 'create'])->name('checkout');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

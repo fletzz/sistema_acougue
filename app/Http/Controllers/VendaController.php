@@ -38,12 +38,20 @@ class VendaController extends Controller
         $produtos = Produto::all();
         $formaPagamentos = FormaPagamento::all();
 
-        return view ('vendas.create' , [
-            'clientes' => $clientes,
-            'produtos' => $produtos,
-            'formaPagamentos' => $formaPagamentos
+        // 🔹 NOVO: carregar as últimas vendas para o modal "vendas finalizadas"
+        $vendasRecentes = Venda::with(['cliente'])
+            ->latest()
+            ->limit(20)   // ajuste se quiser mais/menos
+            ->get();
+
+        return view('vendas.create', [
+            'clientes'         => $clientes,
+            'produtos'         => $produtos,
+            'formaPagamentos'  => $formaPagamentos,
+            'vendasRecentes'   => $vendasRecentes, // 🔹 passar pra view
         ]);
     }
+
 
     /**
      * Store a newly created resource in storage.

@@ -2,68 +2,77 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Venda;
 use App\Models\Produto;
-use App\Models\Cliente;
-use App\Models\Caixa;
+use App\Models\Venda;
 use App\Models\ContasReceber;
-use App\Models\NotaFiscal;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $hoje = now()->startOfDay();
-        $mesAtual = now()->startOfMonth();
+        $user = Auth::user();
 
-        $vendasHoje = Venda::whereDate('data_venda', today())
-            ->sum('valor_total_final');
-
-        $vendasMes = Venda::whereMonth('data_venda', now()->month)
-            ->whereYear('data_venda', now()->year)
-            ->sum('valor_total_final');
-
-        $totalVendas = Venda::count();
-        $totalClientes = Cliente::count();
+        // 1) Cards de resumo
         $totalProdutos = Produto::count();
-        $caixasAbertos = Caixa::where('status', 'aberto')->count();
-        
-        $contasPendentes = ContasReceber::where('status', 'pendente')
-            ->sum('valor_pago');
 
-        $produtosEstoqueBaixo = Produto::whereColumn('estoque_atual', '<=', 'estoque_minimo')
-            ->where('estoque_minimo', '>', 0)
+        $estoqueBaixo = Produto::whereColumn('estoque_atual', '<=', 'estoque_minimo')
             ->count();
 
-        $vendasRecentes = Venda::with(['cliente', 'user'])
-            ->latest()
+        // ajuste o campo "data_venda" se na sua tabela for "created_at" ou outro
+        $valorTotalHoje = Venda::whereDate('data_venda', Carbon::today())
+            ->sum('valor_total_final');
+
+        // contas a receber pendentes (ajuste campo/valor de status se for diferente)
+        $fiadosAReceber = ContasReceber::where('status', 'pendente')
+            ->sum('valor_pago');
+
+        // 2) Fiados próximos (5 primeiros)
+        $fiadosProximos = ContasReceber::with('cliente')
+            ->where('status', 'pendente')
+            ->orderBy('data_pagamento')
             ->limit(5)
             ->get();
 
-        $produtosMaisVendidos = DB::table('venda_items')
-            ->join('produtos', 'venda_items.produto_id', '=', 'produtos.id')
-            ->select('produtos.nome', DB::raw('SUM(venda_items.quantidade) as total_vendido'))
-            ->groupBy('produtos.id', 'produtos.nome')
-            ->orderBy('total_vendido', 'desc')
-            ->limit(5)
+        // 3) Alerta de estoque (4 produtos mais “críticos”)
+        $alertaEstoque = Produto::orderByRaw('(estoque_atual - estoque_minimo) asc')
+            ->limit(4)
             ->get();
 
-        $nfePendentes = NotaFiscal::where('status', 'digitacao')->count();
+        // 4) Vendas últimos 7 dias (para o gráfico)
+        $diasPeriodo = collect(range(6, 0))->map(function ($i) {
+            return Carbon::today()->subDays($i);
+        });
+
+        // monta arrays alinhados: labels (Seg, Ter...) e valores
+        $chartLabels = $diasPeriodo->map(function (Carbon $dia) {
+            return ucfirst($dia->locale('pt_BR')->isoFormat('ddd'));
+        });
+
+        $valoresPorDia = Venda::whereBetween('data_venda', [
+                $diasPeriodo->first()->startOfDay(),
+                $diasPeriodo->last()->endOfDay(),
+            ])
+            ->selectRaw('DATE(data_venda) as data, SUM(valor_total_final) as total')
+            ->groupBy('data')
+            ->pluck('total', 'data'); // ['2025-11-10' => 123.45, ...]
+
+        $chartValues = $diasPeriodo->map(function (Carbon $dia) use ($valoresPorDia) {
+            $key = $dia->toDateString();
+            return (float) ($valoresPorDia[$key] ?? 0);
+        });
 
         return view('dashboard', [
-            'vendasHoje' => $vendasHoje,
-            'vendasMes' => $vendasMes,
-            'totalVendas' => $totalVendas,
-            'totalClientes' => $totalClientes,
-            'totalProdutos' => $totalProdutos,
-            'caixasAbertos' => $caixasAbertos,
-            'contasPendentes' => $contasPendentes,
-            'produtosEstoqueBaixo' => $produtosEstoqueBaixo,
-            'vendasRecentes' => $vendasRecentes,
-            'produtosMaisVendidos' => $produtosMaisVendidos,
-            'nfePendentes' => $nfePendentes
+            'user'           => $user,
+            'totalProdutos'  => $totalProdutos,
+            'estoqueBaixo'   => $estoqueBaixo,
+            'valorTotalHoje' => $valorTotalHoje,
+            'fiadosAReceber' => $fiadosAReceber,
+            'fiadosProximos' => $fiadosProximos,
+            'alertaEstoque'  => $alertaEstoque,
+            'chartLabels'    => $chartLabels,
+            'chartValues'    => $chartValues,
         ]);
     }
 }
-
