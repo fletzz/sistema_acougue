@@ -15,9 +15,13 @@ class ProdutoController extends Controller
      */
     public function index()
     {
-        $produtos = Produto::with('categoria')->get();
+        $produtos   = Produto::with('categoria')->get(); // já traz a categoria junto
+        $categorias = Categoria::all();                  // para o modal "Novo produto"
 
-        return view('produtos.index', ['produtos' => $produtos]);
+        return view('produtos.index', [
+            'produtos'   => $produtos,
+            'categorias' => $categorias,
+        ]);
     }
 
     /**
