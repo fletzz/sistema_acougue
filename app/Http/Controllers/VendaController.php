@@ -193,9 +193,100 @@ class VendaController extends Controller
      */
     public function show($id)
     {
-        $venda = Venda::with(['cliente', 'user', 'items', 'items.produto', 'notaFiscal'])
+        $venda = Venda::with(['cliente', 'user', 'items', 'items.produto', 'notaFiscal', 'usuarioCancelamento'])
                      ->findOrFail($id);
 
         return view('vendas.show', ['venda' => $venda]);
+    }
+
+    /**
+     * Cancela uma venda e estorna estoque, movimentações e contas
+     */
+    public function cancelar(Request $request, $id)
+    {
+        $dadosValidados = $request->validate([
+            'motivo_cancelamento' => 'required|string|max:255'
+        ]);
+
+        $venda = Venda::with(['items.produto', 'contasReceber', 'notaFiscal'])->findOrFail($id);
+
+        if (!$venda->podeSerCancelada()) {
+            return back()->withErrors(['erro' => 'Esta venda não pode ser cancelada.']);
+        }
+
+        // Verificar se tem NF-e autorizada (não pode cancelar se já foi autorizada na SEFAZ)
+        if ($venda->notaFiscal && $venda->notaFiscal->status === 'autorizada') {
+            return back()->withErrors(['erro' => 'Não é possível cancelar venda com NF-e já autorizada. É necessário cancelar a NF-e primeiro na SEFAZ.']);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // 1. Estornar estoque dos produtos
+            foreach ($venda->items as $item) {
+                $produto = $item->produto;
+                $produto->estoque_atual += $item->quantidade;
+                $produto->save();
+            }
+
+            // 2. Estornar movimentação de caixa
+            $caixa = \App\Models\Caixa::where('status', 'aberto')->first();
+            if ($caixa) {
+                // Buscar movimentação da venda
+                $movimentacao = CaixaMovimentacao::where('caixa_id', $caixa->id)
+                    ->where('tipo_movimentacao', 'venda')
+                    ->where('observacao', 'Venda #' . $venda->id)
+                    ->first();
+
+                if ($movimentacao) {
+                    // Criar movimentação de estorno
+                    CaixaMovimentacao::create([
+                        'caixa_id' => $caixa->id,
+                        'usuario_id' => Auth::id(),
+                        'forma_pagamento_id' => $movimentacao->forma_pagamento_id,
+                        'tipo_movimentacao' => 'estorno',
+                        'valor' => $movimentacao->valor,
+                        'data_movimentacao' => now(),
+                        'observacao' => 'Estorno - Venda #' . $venda->id . ' cancelada'
+                    ]);
+
+                    // Atualizar saldo do caixa
+                    $caixa->saldo_atual -= $movimentacao->valor;
+                    $caixa->save();
+                }
+            }
+
+            // 3. Cancelar contas a receber relacionadas
+            foreach ($venda->contasReceber as $conta) {
+                if ($conta->status === 'pendente') {
+                    $conta->update(['status' => 'cancelada']);
+                }
+            }
+
+            // 4. Atualizar status da venda
+            $venda->update([
+                'status' => 'cancelada',
+                'motivo_cancelamento' => $dadosValidados['motivo_cancelamento'],
+                'usuario_cancelamento_id' => Auth::id(),
+                'data_cancelamento' => now()
+            ]);
+
+            // 5. Se tiver NF-e em digitação, pode cancelar também
+            if ($venda->notaFiscal && $venda->notaFiscal->status === 'digitacao') {
+                $venda->notaFiscal->update(['status' => 'cancelada']);
+            }
+
+            DB::commit();
+
+            Log::info("Venda #{$venda->id} cancelada por usuário #" . Auth::id() . ". Motivo: " . $dadosValidados['motivo_cancelamento']);
+
+            return redirect()->route('vendas.show', $venda->id)
+                ->with('success', 'Venda cancelada com sucesso! Estoque e movimentações foram estornados.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Erro ao cancelar venda #' . $id . ': ' . $e->getMessage());
+            return back()->withErrors(['erro' => 'Erro ao cancelar venda: ' . $e->getMessage()]);
+        }
     }
 }

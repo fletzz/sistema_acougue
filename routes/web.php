@@ -21,6 +21,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TransformacaoController;
 use App\Http\Controllers\EntradaMercadoriaController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\RelatorioController;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,6 +57,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/vendas/create', [VendaController::class, 'create'])->name('vendas.create');
     Route::post('/vendas', [VendaController::class, 'store'])->name('vendas.store');
     Route::get('/vendas/{id}', [VendaController::class, 'show'])->name('vendas.show');
+    Route::post('/vendas/{id}/cancelar', [VendaController::class, 'cancelar'])->name('vendas.cancelar');
 
     Route::resource('emitente', EmitenteController::class);
     Route::get('/nfe', [NFeController::class, 'index'])->name('nfe.index');
@@ -79,6 +81,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('entrada_mercadoria', EntradaMercadoriaController::class);
     Route::resource('ajuste_estoque', AjusteEstoqueController::class);
     Route::resource('transformacao', TransformacaoController::class);
+
+    // Relatórios
+    Route::get('/relatorios/vendas', [RelatorioController::class, 'vendas'])->name('relatorios.vendas');
+    Route::get('/relatorios/produtos-mais-vendidos', [RelatorioController::class, 'produtosMaisVendidos'])->name('relatorios.produtos_mais_vendidos');
+    Route::get('/relatorios/lucratividade', [RelatorioController::class, 'lucratividade'])->name('relatorios.lucratividade');
+    Route::get('/relatorios/estoque', [RelatorioController::class, 'estoque'])->name('relatorios.estoque');
+    Route::get('/relatorios/fiados', [RelatorioController::class, 'fiados'])->name('relatorios.fiados');
 
 });
 // --- FIM DAS ROTAS PROTEGIDAS ---

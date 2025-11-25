@@ -24,6 +24,7 @@ class User extends Authenticatable
         'password',
         'nivel_acesso',
         'ativo',
+        'role_id',
     ];
 
     /**
@@ -44,4 +45,64 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Role principal do usuário
+     */
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    /**
+     * Todos os roles do usuário (many-to-many)
+     */
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'role_user');
+    }
+
+    /**
+     * Verifica se o usuário tem um role específico
+     */
+    public function hasRole($role)
+    {
+        if (is_string($role)) {
+            return $this->roles()->where('name', $role)->exists() || 
+                   ($this->role && $this->role->name === $role);
+        }
+        
+        return $this->roles()->where('role_id', $role->id)->exists() ||
+               ($this->role && $this->role->id === $role->id);
+    }
+
+    /**
+     * Verifica se o usuário tem uma permissão específica
+     */
+    public function hasPermission($permission)
+    {
+        // Verifica através do role principal
+        if ($this->role) {
+            if ($this->role->hasPermission($permission)) {
+                return true;
+            }
+        }
+
+        // Verifica através dos roles adicionais
+        foreach ($this->roles as $role) {
+            if ($role->hasPermission($permission)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Verifica se o usuário é administrador
+     */
+    public function isAdmin()
+    {
+        return $this->hasRole('admin') || $this->hasRole('administrador');
+    }
 }
