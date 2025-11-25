@@ -13,11 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('ncm', function (Blueprint $table) {
-            $table->string('codigo')->primary();
-            $table->text('descricao');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('ncm')) {
+            Schema::create('ncm', function (Blueprint $table) {
+                $table->string('codigo')->primary();
+                $table->text('descricao');
+                $table->timestamps();
+            });
+        }
     }
 
     /**

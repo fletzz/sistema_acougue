@@ -10,7 +10,22 @@ class Produto extends Model
     
     use HasFactory;
 
-    protected $fillable = ['nome','categoria_id','preco_venda','unidade_medida','codigo_barras'];
+    protected $fillable = [
+        'nome',
+        'categoria_id',
+        'preco_venda',
+        'unidade_medida',
+        'codigo_barras',
+        'ncm_codigo',
+        'origem_mercadoria',
+        'cest',
+        'cfop',
+        'csosn',
+        'cst_icms',
+        'aliquota_icms',
+        'aliquota_pis',
+        'aliquota_cofins'
+    ];
 
     protected $table = 'produtos';
 

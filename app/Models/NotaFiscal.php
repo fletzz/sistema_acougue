@@ -35,7 +35,10 @@ class NotaFiscal extends Model
         'valor_impostos',
         'valor_total_nfe',
         'informacoes_adicionais',
-        'versao_leiaute'
+        'versao_leiaute',
+        'xml_gerado',
+        'xml_assinado',
+        'xml_autorizado'
     ];
 
     protected $casts = [

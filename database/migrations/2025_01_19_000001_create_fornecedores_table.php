@@ -13,16 +13,18 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('fornecedores', function (Blueprint $table) {
-            $table->id();
-            $table->string('razao_social');
-            $table->string('nome_fantasia')->nullable();
-            $table->string('cnpj')->unique();
-            $table->string('telefone')->nullable();
-            $table->string('email')->unique()->nullable();
-            $table->text('endereco')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('fornecedores')) {
+            Schema::create('fornecedores', function (Blueprint $table) {
+                $table->id();
+                $table->string('razao_social');
+                $table->string('nome_fantasia')->nullable();
+                $table->string('cnpj')->unique();
+                $table->string('telefone')->nullable();
+                $table->string('email')->unique()->nullable();
+                $table->text('endereco')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

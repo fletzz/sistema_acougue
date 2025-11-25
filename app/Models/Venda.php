@@ -34,4 +34,30 @@ class Venda extends Model
     public function contasReceber() {
         return $this->hasMany(ContasReceber::class);
     }
+
+    /**
+     * Verifica se a venda deve gerar NF-e automaticamente
+     * Regras:
+     * - Se cliente é PJ (CNPJ): SEMPRE gerar (obrigatório por lei)
+     * - Se cliente é PF (CPF) e valor > R$ 100: Sugerir gerar
+     * - Se consumidor final: Não gerar automaticamente
+     * 
+     * @return bool
+     */
+    public function deveGerarNFeAutomaticamente()
+    {
+        // Se não tem cliente, é consumidor final - não gerar automaticamente
+        if (!$this->cliente) {
+            return false;
+        }
+
+        // Se cliente é PJ (CNPJ) → SEMPRE gerar (obrigatório por lei)
+        if ($this->cliente->isPessoaJuridica()) {
+            return true;
+        }
+
+        // Para PF ou outros casos, não gerar automaticamente
+        // (pode ser gerado manualmente depois se necessário)
+        return false;
+    }
 }

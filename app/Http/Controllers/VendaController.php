@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\ContasReceber;
 use App\Models\CaixaMovimentacao;
+use App\Services\NFeService;
+use App\Models\Emitente;
+use Illuminate\Support\Facades\Log;
 
 
 class VendaController extends Controller
@@ -145,13 +148,44 @@ class VendaController extends Controller
             }
 
             DB::commit();
+
+            // Recarregar venda com relacionamentos para verificar se deve gerar NF-e
+            $venda->refresh();
+            $venda->load('cliente');
+
+            // Gerar NF-e automaticamente se cliente for PJ (obrigatório por lei)
+            if ($venda->deveGerarNFeAutomaticamente()) {
+                try {
+                    // Buscar emitente (pega o primeiro cadastrado)
+                    $emitente = Emitente::first();
+                    
+                    if ($emitente) {
+                        $nfeService = app(NFeService::class);
+                        $nfeService->gerarNFe($venda->id, $emitente->id, '2'); // Ambiente 2 = Homologação
+                        
+                        Log::info("NF-e gerada automaticamente para venda #{$venda->id} - Cliente PJ: {$venda->cliente->nome}");
+                    } else {
+                        Log::warning("Não foi possível gerar NF-e automaticamente para venda #{$venda->id}: Nenhum emitente cadastrado");
+                    }
+                } catch (\Exception $e) {
+                    // Se der erro ao gerar NF-e, não desfaz a venda (já foi finalizada)
+                    // Mas registra o erro para correção posterior
+                    Log::error("Erro ao gerar NF-e automaticamente para venda #{$venda->id}: " . $e->getMessage());
+                }
+            }
+
         } catch (\Exception $e) {
             DB::rollBack(); //se algo falhar ISSO desfaz tudo (venda e etc...)
 
             return back()->withErrors(['erro_geral' => 'Erro ao finalizar a venda: ' . $e->getMessage()]);
         }
 
-        return redirect('/vendas/create')->with('success', 'Venda finalizada com sucesso!');
+        $mensagem = 'Venda finalizada com sucesso!';
+        if ($venda->deveGerarNFeAutomaticamente() && $venda->notaFiscal) {
+            $mensagem .= ' NF-e gerada automaticamente.';
+        }
+
+        return redirect('/vendas/create')->with('success', $mensagem);
     }
 
     /**

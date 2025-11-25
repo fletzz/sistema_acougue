@@ -95,7 +95,14 @@ class NFeController extends Controller
             return back()->withErrors(['erro' => 'NFe não possui chave de acesso']);
         }
 
-        $xml = $this->nfeService->gerarXML($notaFiscal);
+        // Usar XML gerado se existir, senão gerar novo
+        if ($notaFiscal->xml_gerado) {
+            $xml = $notaFiscal->xml_gerado;
+        } else {
+            $notaFiscal->load(['itens.produto', 'emitente', 'destinatario', 'pagamentos.formaPagamento']);
+            $xml = $this->nfeService->gerarXML($notaFiscal);
+            $notaFiscal->update(['xml_gerado' => $xml]);
+        }
 
         return response($xml, 200)
             ->header('Content-Type', 'application/xml')

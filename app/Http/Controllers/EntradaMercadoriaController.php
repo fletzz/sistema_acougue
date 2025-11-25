@@ -45,6 +45,10 @@ class EntradaMercadoriaController extends Controller
 
         $itemsArray = json_decode($dadosValidados['itens'], true);
 
+        if (json_last_error() !== JSON_ERROR_NONE || !is_array($itemsArray) || empty($itemsArray)) {
+            return back()->withErrors(['erro' => 'Erro ao processar os itens da entrada. Por favor, tente novamente.']);
+        }
+
         try {
             DB::beginTransaction();
 
@@ -56,9 +60,14 @@ class EntradaMercadoriaController extends Controller
             ]);
 
             foreach ($itemsArray as $item) {
-                $produtoId = $item['produto_id'];
+                $produtoId = null;
 
                 if (isset($item['novo_produto']) && $item['novo_produto'] === true) {
+                    // Validação dos campos obrigatórios para novo produto
+                    if (empty($item['nome_produto']) || empty($item['categoria_id']) || empty($item['unidade_medida'])) {
+                        throw new \Exception('Campos obrigatórios faltando para novo produto: nome, categoria e unidade de medida.');
+                    }
+
                     $novoProduto = Produto::create([
                         'nome' => $item['nome_produto'],
                         'categoria_id' => $item['categoria_id'],
@@ -69,6 +78,15 @@ class EntradaMercadoriaController extends Controller
                         'estoque_minimo' => 0
                     ]);
                     $produtoId = $novoProduto->id;
+                } else {
+                    if (empty($item['produto_id'])) {
+                        throw new \Exception('Produto ID é obrigatório para produtos existentes.');
+                    }
+                    $produtoId = $item['produto_id'];
+                }
+
+                if (empty($item['quantidade']) || $item['quantidade'] <= 0) {
+                    throw new \Exception('Quantidade deve ser maior que zero.');
                 }
 
                 EntradaMercadoriaItem::create([
