@@ -15,9 +15,18 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased overflow-hidden bg-gray-100">
-        <div class="min-h-screen">
-            {{-- Sem navbar, sem header – só o conteúdo da página --}}
-            {{ $slot }}
+        <div class="min-h-screen bg-[#F5F6FA] flex">
+            <x-sidebar />
+            <div class="flex-1 flex flex-col">
+
+                {{-- TOPBAR GLOBAL --}}
+                <x-topbar :title="$title ?? null" />
+
+                {{-- CONTEÚDO --}}
+                <div class="flex-1">
+                    {{ $slot }}
+                </div>
+            </div>
         </div>
     </body>
 </html>

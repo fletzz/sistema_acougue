@@ -1,21 +1,11 @@
 {{-- resources/views/vendas/create.blade.php --}}
 
 <x-app-layout>
+    <x-slot name="title">Estoque</x-slot>
     <div class="min-h-screen bg-gray-100 flex flex-col">
 
         {{-- TOPO / HEADER DO PDV --}}
         <header class="flex items-center justify-between px-8 py-4 bg-white shadow-sm">
-            <div class="flex items-center space-x-4">
-                <img src="{{ asset('images/logo-flamboyant.svg') }}" alt="Flamboyant" class="h-10">
-                <div class="flex flex-col">
-                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wide">
-                        Frente de Caixa
-                    </span>
-                    <h1 class="text-lg font-semibold text-gray-800">
-                        Checkout - Vendas de produtos
-                    </h1>
-                </div>
-            </div>
 
             <div class="flex items-center space-x-3">
                 {{-- Botão para abrir o modal com vendas finalizadas --}}

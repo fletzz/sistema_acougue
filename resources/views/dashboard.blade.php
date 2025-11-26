@@ -1,128 +1,14 @@
 <x-app-layout>
+    <x-slot name="title">
+        Boas vendas {{ Auth::user()->name }}!
+    </x-slot>
     {{-- Deixa o header padrão vazio --}}
     <x-slot name="header"></x-slot>
 
     <div class="min-h-screen bg-[#F5F6FA] flex">
 
-        {{-- SIDEBAR --}}
-        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
-            {{-- Logo --}}
-            <div class="h-20 flex items-center px-6 border-b border-gray-100">
-                <div class="flex items-center gap-3">
-                    <img src="{{ asset('images/logo-flamboyant.svg') }}" alt="Flamboyant" class="h-10">
-                </div>
-            </div>
-
-            {{-- Menu --}}
-            <nav class="flex-1 px-4 pt-6 space-y-6 text-sm text-gray-600">
-
-                <div class="space-y-1">
-                    <p class="px-3 text-[11px] font-semibold tracking-[0.18em] text-gray-400 uppercase">
-                        Menu principal
-                    </p>
-
-                    {{-- Dashboard (ativo) --}}
-                    <a href="#"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#EEF3FF] text-blue-700 font-medium">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm">
-                            <img src="{{ asset('icons/inicio.svg') }}" alt="" class="h-4 w-4">
-                        </span>
-                        <span class="text-sm">Dashboard</span>
-                    </a>
-
-                    {{-- Checkout --}}
-                    <a href="{{ route('checkout') }}"
-                    class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium
-                            text-blue-600 bg-white shadow-sm">
-                        {{-- ícone que você já colocou --}}
-                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm">
-                            <img src="{{ asset('icons/checkout.svg') }}" alt="" class="h-4 w-4">
-                        </span>
-                        <span>Checkout</span>
-                    </a>
-
-                    {{-- Estoque --}}
-                    <a href="{{ route('produtos.index') }}"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-500">
-                            <img src="{{ asset('icons/estoque.svg') }}" alt="" class="h-4 w-4">
-                        </span>
-                        <span class="text-sm">Estoque</span>
-                    </a>
-
-                    {{-- Entrada --}}
-                    <a href="#"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-500">
-                            <img src="{{ asset('icons/entrada.svg') }}" alt="" class="h-4 w-4">
-                        </span>
-                        <span class="text-sm">Entrada</span>
-                    </a>
-
-                    {{-- Clientes --}}
-                    <a href="#"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-500">
-                            <img src="{{ asset('icons/clientes.svg') }}" alt="" class="h-4 w-4">
-                        </span>
-                        <span class="text-sm">Clientes</span>
-                    </a>
-                </div>
-
-                <div class="space-y-1">
-                    <p class="px-3 text-[11px] font-semibold tracking-[0.18em] text-gray-400 uppercase">
-                        Configurações
-                    </p>
-
-                    {{-- Sistema --}}
-                    <a href="#"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-500">
-                            <img src="{{ asset('icons/configuracoes.svg') }}" alt="" class="h-4 w-4">
-                        </span>
-                        <span class="text-sm">Sistema</span>
-                    </a>
-
-                    {{-- Usuários --}}
-                    <a href="#"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-500">
-                            <img src="{{ asset('icons/usuarios.svg') }}" alt="" class="h-4 w-4">
-                        </span>
-                        <span class="text-sm">Usuários</span>
-                    </a>
-                </div>
-            </nav>
-
-            {{-- Usuário logado --}}
-            <div class="border-t border-gray-100 px-4 py-4 flex items-center gap-3">
-                <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                    <span class="text-sm font-semibold text-gray-600">
-                        {{ strtoupper(substr(auth()->user()->name ?? 'F',0,1)) }}
-                    </span>
-                </div>
-                <div class="flex flex-col">
-                    <span class="text-sm font-medium text-gray-800 truncate">
-                        {{ auth()->user()->name ?? 'Felipe Bentes' }}
-                    </span>
-                    <span class="text-xs text-gray-400">Admin</span>
-                </div>
-            </div>
-        </aside>
-
         {{-- CONTEÚDO PRINCIPAL --}}
         <main class="flex-1 px-8 py-6 overflow-y-auto">
-
-            {{-- Topo / saudação + sino --}}
-            <div class="flex items-center justify-between mb-6">
-            <h1 class="text-lg font-semibold text-gray-800">
-                Boas vendas {{ $user->name ?? 'Felipe Bentes' }}!
-            </h1>
-                <button class="h-10 w-10 flex items-center justify-center rounded-full bg-white shadow-sm border border-gray-100">
-                    <img src="{{ asset('icons/notificacao.svg') }}" alt="" class="h-4 w-4">
-                </button>
-            </div>
-
             {{-- Cards de resumo --}}
             <div class="grid grid-cols-4 gap-4 mb-6">
                 {{-- Total de produtos --}}
