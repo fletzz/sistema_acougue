@@ -41,7 +41,31 @@ Route::middleware(['auth', 'verified'])->group(function () {
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-    Route::get('/checkout', [VendaController::class, 'create'])->name('checkout');
+    //Route::get('/checkout', [VendaController::class, 'create'])->name('checkout');
+    // DASHBOARD DO CAIXA
+    Route::get('/checkout', [VendaController::class, 'index'])->name('checkout');
+
+    // ABRIR CAIXA
+    Route::post('/checkout/abrir', [VendaController::class, 'abrirCaixa'])->name('checkout.abrir');
+
+    // TELA DO PDV
+    Route::get('/checkout/pdv', [VendaController::class, 'create'])->name('checkout.pdv');
+    
+    Route::get('/pdv/produtos', function () {
+        $query = request('q');
+
+        return \App\Models\Produto::where('nome', 'LIKE', "%$query%")
+            ->orWhere('codigo_barras', 'LIKE', "%$query%")
+            ->limit(20)
+            ->get()
+            ->map(function ($p) {
+                return [
+                    'id' => $p->id,
+                    'nome' => $p->nome,
+                    'preco_venda' => (float) str_replace(',', '.', $p->preco_venda),
+                ];
+            });
+    })->name('pdv.produtos');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -54,7 +78,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('forma_pagamentos', FormaPagamentoController::class);
 
     Route::get('/vendas', [VendaController::class, 'index'])->name('vendas.index');
-    Route::get('/vendas/create', [VendaController::class, 'create'])->name('vendas.create');
+    //Route::get('/vendas/create', [VendaController::class, 'create'])->name('vendas.create');
     Route::post('/vendas', [VendaController::class, 'store'])->name('vendas.store');
     Route::get('/vendas/{id}', [VendaController::class, 'show'])->name('vendas.show');
     Route::post('/vendas/{id}/cancelar', [VendaController::class, 'cancelar'])->name('vendas.cancelar');
@@ -66,6 +90,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/nfe/{id}', [NFeController::class, 'show'])->name('nfe.show');
     Route::post('/nfe/{id}/autorizar', [NFeController::class, 'autorizar'])->name('nfe.autorizar');
     Route::get('/nfe/{id}/xml', [NFeController::class, 'downloadXml'])->name('nfe.xml');
+
+    Route::post('/vendas/abrir-caixa', [VendaController::class, 'abrirCaixa'])
+    ->name('vendas.abrirCaixa');
 
     Route::resource('caixa', CaixaController::class);
     Route::post('/caixa/{id}/abrir', [CaixaController::class, 'abrir'])->name('caixa.abrir');
