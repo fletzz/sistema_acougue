@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\EntradaMercadoriaItem;
 
 class Transformacao extends Model
 {
@@ -16,7 +17,8 @@ class Transformacao extends Model
         'quantidade_origem',
         'usuario_id',
         'data_transformacao',
-        'observacao'
+        'observacao',
+        'entrada_mercadoria_item_id'
     ];
 
     protected $casts = [
@@ -36,6 +38,14 @@ class Transformacao extends Model
     public function itens()
     {
         return $this->hasMany(TransformacaoItem::class, 'transformacao_id');
+    }
+
+    /**
+     * Relacionamento com o item de entrada que originou esta transformação
+     */
+    public function entradaMercadoriaItem()
+    {
+        return $this->belongsTo(EntradaMercadoriaItem::class, 'entrada_mercadoria_item_id');
     }
 }
 

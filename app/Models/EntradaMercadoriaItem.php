@@ -15,7 +15,16 @@ class EntradaMercadoriaItem extends Model
         'entrada_mercadoria_id',
         'produto_id',
         'quantidade',
-        'preco_custo'
+        'preco_custo',
+        'processado',
+        'quantidade_processada'
+    ];
+
+    protected $casts = [
+        'processado' => 'boolean',
+        'quantidade' => 'decimal:3',
+        'quantidade_processada' => 'decimal:3',
+        'preco_custo' => 'decimal:4'
     ];
 
     public function entradaMercadoria()
@@ -26,6 +35,14 @@ class EntradaMercadoriaItem extends Model
     public function produto()
     {
         return $this->belongsTo(Produto::class);
+    }
+
+    /**
+     * Relacionamento com a transformação (desossa) gerada a partir deste item
+     */
+    public function transformacao()
+    {
+        return $this->hasOne(\App\Models\Transformacao::class, 'entrada_mercadoria_item_id');
     }
 }
 
