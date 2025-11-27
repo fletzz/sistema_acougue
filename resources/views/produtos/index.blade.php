@@ -1,148 +1,19 @@
 <x-app-layout>
-    <div class="min-h-screen bg-[#F5F6FA] flex">
+    <x-slot name="header">
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <i class="fas fa-boxes mr-2"></i>Estoque de Produtos
+            </h2>
+            <button onclick="document.getElementById('novoProdutoModal').classList.remove('hidden')" 
+                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center">
+                <i class="fas fa-plus mr-2"></i> Novo Produto
+            </button>
+        </div>
+    </x-slot>
 
-        {{-- SIDEBAR (MESMA DA DASHBOARD, COM ESTOQUE ATIVO) --}}
-        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
-            {{-- Logo --}}
-            <div class="h-20 flex items-center px-6 border-b border-gray-100">
-                <div class="flex items-center gap-3">
-                    <img src="{{ asset('images/logo-flamboyant.png') }}" alt="Flamboyant" class="h-10">
-                </div>
-            </div>
-
-            {{-- Menu --}}
-            <nav class="flex-1 px-4 pt-6 space-y-6 text-sm text-gray-600">
-
-                <div class="space-y-1">
-                    <p class="px-3 text-[11px] font-semibold tracking-[0.18em] text-gray-400 uppercase">
-                        Menu principal
-                    </p>
-
-                    {{-- Dashboard (normal) --}}
-                    <a href="{{ route('dashboard') }}"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-500">
-                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none"
-                                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                 stroke-linejoin="round">
-                                <path d="M3 9.5L12 3l9 6.5"></path>
-                                <path d="M5 10.5V21h14V10.5"></path>
-                            </svg>
-                        </span>
-                        <span class="text-sm">Dashboard</span>
-                    </a>
-
-                    {{-- Checkout --}}
-                    <a href="{{ route('checkout') }}"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-500">
-                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none"
-                                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                 stroke-linejoin="round">
-                                <polyline points="6 6 6 3 18 3 18 6"></polyline>
-                                <path d="M6 9h12l-1 11H7L6 9Z"></path>
-                            </svg>
-                        </span>
-                        <span class="text-sm">Checkout</span>
-                    </a>
-
-                    {{-- Estoque (ATIVO) --}}
-                    <a href="{{ route('produtos.index') }}"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#EEF3FF] text-blue-700 font-medium">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm">
-                            <svg class="h-4 w-4 text-blue-600" viewBox="0 0 24 24" fill="none"
-                                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                 stroke-linejoin="round">
-                                <rect x="3" y="4" width="18" height="16" rx="2"></rect>
-                                <path d="M3 10h18"></path>
-                            </svg>
-                        </span>
-                        <span class="text-sm">Estoque</span>
-                    </a>
-
-                    {{-- Entrada --}}
-                    <a href="#"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-500">
-                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none"
-                                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                 stroke-linejoin="round">
-                                <path d="M3 3h18v6H3z"></path>
-                                <path d="M8 13h8"></path>
-                                <path d="M12 9v10"></path>
-                            </svg>
-                        </span>
-                        <span class="text-sm">Entrada</span>
-                    </a>
-
-                    {{-- Clientes --}}
-                    <a href="#"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-500">
-                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none"
-                                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                 stroke-linejoin="round">
-                                <circle cx="12" cy="8" r="3"></circle>
-                                <path d="M6 20c0-3.3 2.7-6 6-6s6 2.7 6 6"></path>
-                            </svg>
-                        </span>
-                        <span class="text-sm">Clientes</span>
-                    </a>
-                </div>
-
-                <div class="space-y-1">
-                    <p class="px-3 text-[11px] font-semibold tracking-[0.18em] text-gray-400 uppercase">
-                        Configurações
-                    </p>
-
-                    {{-- Sistema --}}
-                    <a href="#"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-500">
-                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none"
-                                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                 stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="3"></circle>
-                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 3.6 15a1.65 1.65 0 0 0-1.51-1H2a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 3.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 8 3.6 1.65 1.65 0 0 0 9.51 2.09H9.6a2 2 0 0 1 4 0v.09A1.65 1.65 0 0 0 15 3.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 20.4 9a1.65 1.65 0 0 0 1.51 1H22a2 2 0 0 1 0 4h-.09A1.65 1.65 0 0 0 19.4 15z"/>
-                            </svg>
-                        </span>
-                        <span class="text-sm">Sistema</span>
-                    </a>
-
-                    {{-- Usuários --}}
-                    <a href="#"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-500">
-                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none"
-                                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                 stroke-linejoin="round">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="9" cy="7" r="3"></circle>
-                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                            </svg>
-                        </span>
-                        <span class="text-sm">Usuários</span>
-                    </a>
-                </div>
-            </nav>
-
-            {{-- Usuário logado --}}
-            <div class="border-t border-gray-100 px-4 py-4 flex items-center gap-3">
-                <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                    <span class="text-sm font-semibold text-gray-600">
-                        {{ strtoupper(substr(auth()->user()->name ?? 'F',0,1)) }}
-                    </span>
-                </div>
-                <div class="flex flex-col">
-                    <span class="text-sm font-medium text-gray-800 truncate">
-                        {{ auth()->user()->name ?? 'Felipe Bentes' }}
-                    </span>
-                    <span class="text-xs text-gray-400">Admin</span>
-                </div>
-            </div>
-        </aside>
-
+    <div class="py-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
         {{-- CONTEÚDO PRINCIPAL: ESTOQUE --}}
         <main class="flex-1 px-8 py-6 overflow-y-auto">
             {{-- Cabeçalho da página --}}
@@ -420,7 +291,6 @@
                             </button>
                         </div>
                     </form>
-                </div>
             </div>
         </div>
     </div>
@@ -428,9 +298,10 @@
     {{-- JS: filtro da tabela + controle do modal --}}
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Filtro de busca
-            const inputBusca = document.getElementById('busca-produto-estoque');
-            const linhas = document.querySelectorAll('#tabela-estoque-body .produto-row');
+            // Filtro da tabela
+            const searchInput = document.querySelector('input[type="search"]');
+            const tableBody = document.getElementById('tabela-estoque-body');
+            const rows = tableBody.getElementsByTagName('tr');
 
             inputBusca.addEventListener('keyup', () => {
                 const termo = inputBusca.value.toLowerCase();

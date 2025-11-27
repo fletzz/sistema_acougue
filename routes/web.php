@@ -105,7 +105,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/contas_receber/{id}/receber', [ContasReceberController::class, 'receber'])->name('contas_receber.receber');
 
     Route::resource('entrada_nota', EntradaNotaController::class);
-    Route::resource('entrada_mercadoria', EntradaMercadoriaController::class);
+    Route::resource('entrada-mercadoria', EntradaMercadoriaController::class)->names('entrada_mercadoria');
+
+    // Rotas para o processo de desossa
+    Route::get('desossa/{entrada}/{item}', [TransformacaoController::class, 'createFromEntrada'])
+        ->name('desossa.create');
+    Route::post('desossa', [TransformacaoController::class, 'storeFromEntrada'])
+        ->name('desossa.store');
+
     Route::resource('ajuste_estoque', AjusteEstoqueController::class);
     Route::resource('transformacao', TransformacaoController::class);
 

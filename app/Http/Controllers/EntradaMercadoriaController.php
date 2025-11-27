@@ -103,8 +103,25 @@ class EntradaMercadoriaController extends Controller
 
             DB::commit();
 
+            // --- LÓGICA DE DECISÃO DE REDIRECIONAMENTO ---
+
+            // Se o usuário clicou em "Confirmar e Iniciar Desossa"
+            if ($request->input('action') === 'desossa') {
+                // Pega o primeiro item da nota recém-criada para iniciar a desossa
+                $primeiroItem = $entrada->itens()->first();
+
+                if ($primeiroItem) {
+                    // Redireciona para a rota de criação de transformação vinculada
+                    return redirect()->route('desossa.create', [
+                        'entrada' => $entrada->id,
+                        'item' => $primeiroItem->id
+                    ])->with('success', 'Entrada registrada! Inicie a desossa da peça abaixo.');
+                }
+            }
+
+            // Fluxo Padrão: Apenas volta para a lista de entradas
             return redirect()->route('entrada_mercadoria.index')
-                ->with('success', 'Entrada de mercadoria registrada com sucesso!');
+                             ->with('success', 'Entrada de mercadoria registrada com sucesso!');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['erro' => 'Erro ao registrar entrada: ' . $e->getMessage()]);
@@ -113,7 +130,7 @@ class EntradaMercadoriaController extends Controller
 
     public function show($id)
     {
-        $entrada = EntradaMercadoria::with(['fornecedor', 'usuario', 'itens.produto'])
+        $entrada = EntradaMercadoria::with(['fornecedor', 'usuario', 'itens.produto', 'itens.transformacao'])
             ->findOrFail($id);
 
         return view('entrada_mercadoria.show', ['entrada' => $entrada]);

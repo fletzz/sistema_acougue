@@ -1,0 +1,10 @@
+/* Esconde a barra lateral na página de desossa */
+body:has(.simple-layout) .sidebar {
+    display: none !important;
+}
+
+/* Garante que o conteúdo ocupe toda a largura */
+.simple-layout .content-wrapper {
+    margin-left: 0 !important;
+    width: 100% !important;
+}
