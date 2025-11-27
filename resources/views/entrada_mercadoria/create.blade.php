@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Nova Entrada de Nota Fiscal
+            Entrada de Matéria-Prima (Carcaças)
         </h2>
     </x-slot>
 
@@ -23,7 +23,17 @@
                     </div>
 
                     <div class="md:col-span-2 bg-white p-6 rounded-lg shadow-sm">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Dados da Nota</h3>
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-gray-800 border-b pb-2">Conferência de Matéria-Prima (Peças/Carcaças)</h3>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-gray-500 flex items-center">
+                                    <svg class="w-4 h-4 mr-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Selecione a peça bruta que entrou (Ex: Boi Casado, Dianteiro)
+                                </span>
+                            </div>
+                        </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div class="col-span-2">
@@ -112,7 +122,7 @@
                             <div class="item-row grid grid-cols-12 gap-3 mb-4 p-4 border rounded-lg bg-gray-50 items-end relative">
                                 
                                 <div class="col-span-12 md:col-span-3">
-                                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Produto (Sistema)</label>
+                                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Vincular à Peça</label>
                                     <select name="produto_id[]" class="produto-entrada w-full text-sm border-gray-300 rounded-md">
                                         <option value="">Selecione...</option>
                                         <option value="__NOVO__" class="font-bold text-blue-600">+ Cadastrar Novo</option>
@@ -171,10 +181,20 @@
                     
                     <input type="hidden" name="itens" id="itens-json">
                     
-                    <button type="submit" class="px-8 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 shadow-md flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                        Confirmar Entrada
-                    </button>
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <button type="submit" name="action" value="entrada" class="px-6 py-3 bg-blue-600 text-white rounded-md font-bold hover:bg-blue-700 transition flex-1 flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Apenas Confirmar Entrada
+                        </button>
+                        <button type="submit" name="action" value="desossa" class="px-6 py-3 bg-purple-600 text-white rounded-md font-bold hover:bg-purple-700 transition flex-1 flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z"></path>
+                            </svg>
+                            Confirmar e Iniciar Desossa
+                        </button>
+                    </div>
                 </div>
 
             </form>

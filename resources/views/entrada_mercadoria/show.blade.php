@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-simple-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             Entrada #{{ $entrada->id }}
@@ -30,18 +30,39 @@
                             <th style="padding: 10px; text-align: left;">Produto</th>
                             <th style="padding: 10px; text-align: left;">Quantidade</th>
                             <th style="padding: 10px; text-align: left;">Preço Custo</th>
+                            <th style="padding: 10px; text-align: right;">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($entrada->itens as $item)
                         <tr>
-                            <td style="padding: 10px;">{{ $item->produto->nome }}</td>
+                            <td style="padding: 10px;">
+                                {{ $item->produto->nome }}
+                                @if($item->transformacao)
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 ml-2">
+                                        Desossado
+                                    </span>
+                                @endif
+                            </td>
                             <td style="padding: 10px;">{{ number_format($item->quantidade, 3, ',', '.') }} {{ $item->produto->unidade_medida }}</td>
                             <td style="padding: 10px;">
                                 @if($item->preco_custo)
                                 R$ {{ number_format($item->preco_custo, 2, ',', '.') }}
                                 @else
                                 -
+                                @endif
+                            </td>
+                            <td style="padding: 10px; text-align: right;">
+                                @if(!$item->transformacao)
+                                    <a href="{{ route('desossa.create', ['entrada' => $entrada->id, 'item' => $item->id]) }}" 
+                                       class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                        Desossar
+                                    </a>
+                                @else
+                                    <a href="{{ route('transformacao.show', $item->transformacao->id) }}" 
+                                       class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                        Ver Desossa
+                                    </a>
                                 @endif
                             </td>
                         </tr>
@@ -51,5 +72,5 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-simple-layout>
 

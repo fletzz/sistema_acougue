@@ -1,8 +1,13 @@
-<x-app-layout>
+<x-simple-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Ajustes de Estoque
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <i class="fas fa-boxes mr-2"></i>Ajustes de Estoque
+            </h2>
+            <a href="{{ route('dashboard') }}" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
+                <i class="fas fa-arrow-left mr-2"></i>Voltar
+            </a>
+        </div>
     </x-slot>
 
     <div class="py-12">
@@ -33,5 +38,5 @@
             </table>
         </div>
     </div>
-</x-app-layout>
+</x-simple-layout>
 
