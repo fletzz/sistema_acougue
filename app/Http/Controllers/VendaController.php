@@ -15,6 +15,7 @@ use App\Models\CaixaMovimentacao;
 use App\Services\NFeService;
 use App\Models\Emitente;
 use Illuminate\Support\Facades\Log;
+use App\Models\Caixa;
 
 
 class VendaController extends Controller
@@ -24,12 +25,30 @@ class VendaController extends Controller
      */
     public function index()
     {
-        
-        $vendas = Venda::with(['cliente', 'user']) 
-                        ->latest()
-                        ->get();
+        // buscar caixa aberto
+        $caixa = Caixa::where('status', 'aberto')->latest()->first();
 
-        return view('vendas.index', ['vendas' => $vendas]);
+        return view('vendas.index', compact('caixa'));
+    }
+
+    public function abrirCaixa()
+    {
+        $caixaAberto = Caixa::where('status', 'aberto')->first();
+
+        if ($caixaAberto) {
+            return redirect()->route('checkout')
+                ->with('error', 'Já existe um caixa aberto.');
+        }
+
+        Caixa::create([
+            'saldo_inicial' => 0,
+            'saldo_atual'   => 0,
+            'status'        => 'aberto',
+            'descricao'     => 'Abertura do caixa em ' . now()->format('d/m/Y H:i:s'),
+        ]);
+
+        return redirect()->route('checkout')
+            ->with('success', 'Caixa aberto com sucesso!');
     }
 
     /**
@@ -37,24 +56,35 @@ class VendaController extends Controller
      */
     public function create()
     {
+        // Buscar o caixa aberto (sem filtrar por usuário)
+        $caixa = Caixa::where('status', 'aberto')
+            ->latest()
+            ->first();
+
+        if (!$caixa) {
+            return redirect()
+                ->route('vendas.index')
+                ->with('error', 'Abra o caixa antes de iniciar o PDV.');
+        }
+
+        // Dados do PDV
         $clientes = Cliente::all();
         $produtos = Produto::all();
         $formaPagamentos = FormaPagamento::all();
 
-        // 🔹 NOVO: carregar as últimas vendas para o modal "vendas finalizadas"
         $vendasRecentes = Venda::with(['cliente'])
             ->latest()
-            ->limit(20)   // ajuste se quiser mais/menos
+            ->limit(20)
             ->get();
 
         return view('vendas.create', [
-            'clientes'         => $clientes,
-            'produtos'         => $produtos,
-            'formaPagamentos'  => $formaPagamentos,
-            'vendasRecentes'   => $vendasRecentes, // 🔹 passar pra view
+            'caixa' => $caixa,
+            'clientes' => Cliente::all(),
+            'produtos' => Produto::all(),
+            'formaPagamentos' => FormaPagamento::all(),
+            'vendasRecentes' => Venda::latest()->limit(20)->get(),
         ]);
     }
-
 
     /**
      * Store a newly created resource in storage.
